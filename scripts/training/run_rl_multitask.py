@@ -1,24 +1,24 @@
 """
-CLI: Multi-task GRPO training.
+CLI: Multi-task RL training.
 
 Trains on any combination of the 11 introspection tasks using the
 MultitaskRecord data format. Reward dispatches per gt_type.
 
 Usage:
     # All tasks:
-    python scripts/training/run_grpo_multitask.py --tasks all
+    python scripts/training/run_rl_multitask.py --tasks all
 
     # Single task (any of the 11):
-    python scripts/training/run_grpo_multitask.py --tasks e3
+    python scripts/training/run_rl_multitask.py --tasks e3
 
     # Subset:
-    python scripts/training/run_grpo_multitask.py --tasks e1,e3,e6
+    python scripts/training/run_rl_multitask.py --tasks e1,e3,e6
 
     # Warm-init from a previous checkpoint:
-    python scripts/training/run_grpo_multitask.py --tasks all --warm-init-checkpoint TINKER_PATH
+    python scripts/training/run_rl_multitask.py --tasks all --warm-init-checkpoint TINKER_PATH
 
     # Smoke test:
-    python scripts/training/run_grpo_multitask.py --tasks e3 --n-steps 2 --n-samples 4
+    python scripts/training/run_rl_multitask.py --tasks e3 --n-steps 2 --n-samples 4
 """
 
 from __future__ import annotations
@@ -43,12 +43,12 @@ logger = logging.getLogger(__name__)
 
 PROJ_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = PROJ_DIR / "outputs/training/multitask_balanced"
-DEFAULT_OUTPUT_DIR = PROJ_DIR / "outputs/training/multitask_grpo"
+DEFAULT_OUTPUT_DIR = PROJ_DIR / "outputs/training/multitask_rl"
 BASE_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Multi-task GRPO training")
+    parser = argparse.ArgumentParser(description="Multi-task RL training")
 
     # Task selection
     parser.add_argument("--tasks", type=str, default="all",
@@ -62,7 +62,7 @@ def main() -> None:
                         help="Tinker path to a previous checkpoint to warm-init from")
     parser.add_argument("--lora-rank", type=int, default=32)
 
-    # Training (defaults match run_grpo_single_task.py — the canonical config)
+    # Training (defaults match run_rl_single_task.py — the canonical config)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--k-completions", type=int, default=16)
     parser.add_argument("--n-steps", type=int, default=200)
@@ -97,7 +97,7 @@ def main() -> None:
 
     # Output
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--wandb-project", type=str, default="prompt-attribution-multitask-grpo")
+    parser.add_argument("--wandb-project", type=str, default="prompt-attribution-multitask-rl")
     parser.add_argument("--run-name", type=str, default="")
 
     # Debug
@@ -110,12 +110,12 @@ def main() -> None:
     # Build config
     sys.path.insert(0, str(PROJ_DIR / "src"))
     from prompt_attribution.training.config import (
-        GRPOConfig,
+        RLConfig,
         MultitaskDataConfig,
         TrainingSchedule,
     )
 
-    config = GRPOConfig(
+    config = RLConfig(
         base_model=args.base_model,
         lora_rank=args.lora_rank,
         seed=args.seed,
@@ -152,12 +152,12 @@ def main() -> None:
         ),
     )
 
-    logger.info(f"Multi-task GRPO: tasks={args.tasks}, data={args.data_dir}")
+    logger.info(f"Multi-task RL: tasks={args.tasks}, data={args.data_dir}")
     logger.info(f"Config: batch={args.batch_size}, K={args.k_completions}, "
                 f"lr={args.lr}, steps={args.n_steps}")
 
-    from prompt_attribution.training.train_grpo import train_grpo
-    asyncio.run(train_grpo(config))
+    from prompt_attribution.training.train_rl import train_rl
+    asyncio.run(train_rl(config))
 
 
 if __name__ == "__main__":

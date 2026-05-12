@@ -1,18 +1,18 @@
 """
-CLI: GRPO single-task training — full dataset, multi-model scale-up.
+CLI: RL single-task training — full dataset, multi-model scale-up.
 
 4 configs (array index 0-3): Llama-8B, Qwen3-8B, Llama-70B, Qwen3-32B.
 All from scratch, mse_format reward, lr=2e-5.
 
 Usage:
     # Run config at index N:
-    python -m scripts.training.run_grpo_single_task --index 0
+    python -m scripts.training.run_rl_single_task --index 0
 
     # List all configs:
-    python -m scripts.training.run_grpo_single_task --list
+    python -m scripts.training.run_rl_single_task --list
 
     # Smoke test (2 samples, 5 steps):
-    python -m scripts.training.run_grpo_single_task --index 0 --n_steps 5 --n_samples 2
+    python -m scripts.training.run_rl_single_task --index 0 --n_steps 5 --n_samples 2
 """
 
 from __future__ import annotations
@@ -59,8 +59,8 @@ QWEN3_32B_CORPUS = PROJ_DIR / "outputs/auto_perturbation/corpus_qwen32b"
 QWEN3_32B_TRAINING_DATA = str(QWEN3_32B_CORPUS / "training_data.jsonl")
 QWEN3_32B_GT_CACHE = ""
 
-OUTPUT_DIR = PROJ_DIR / "outputs/sweeps/grpo_single_task"
-WANDB_PROJECT = "prompt-attribution-grpo"
+OUTPUT_DIR = PROJ_DIR / "outputs/sweeps/rl_single_task"
+WANDB_PROJECT = "prompt-attribution-rl"
 
 # ── Model definitions ────────────────────────────────────────────────────────
 
@@ -164,7 +164,7 @@ def get_configs(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="GRPO single-task training — full dataset, multi-model scale-up"
+        description="RL single-task training — full dataset, multi-model scale-up"
     )
     parser.add_argument("--index", type=int, default=None,
                         help="Config index 0-3 (see --list)")
@@ -177,7 +177,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--training-data", type=str, default=None,
                         help="Override the config's training_data JSONL path")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="Override OUTPUT_DIR (default: outputs/sweeps/grpo_single_task)")
+                        help="Override OUTPUT_DIR (default: outputs/sweeps/rl_single_task)")
     parser.add_argument("--batch_size", type=int, default=None,
                         help="Override per-step batch size (default 64; use small for smoke)")
     parser.add_argument("--k_completions", type=int, default=None,
@@ -195,7 +195,7 @@ def main() -> None:
     )
 
     if args.list:
-        print(f"\nGRPO — {len(configs)} configs:\n")
+        print(f"\nRL — {len(configs)} configs:\n")
         for i, cfg in enumerate(configs):
             print(
                 f"  [{i}] {cfg['run_name']:30s}  "
@@ -242,11 +242,11 @@ def main() -> None:
 
     from prompt_attribution.training.config import (
         DataConfig,
-        GRPOConfig,
+        RLConfig,
         ModelFormat,
         TrainingSchedule,
     )
-    from prompt_attribution.training.train_grpo import train_grpo
+    from prompt_attribution.training.train_rl import train_rl
 
     # Build model format: enable thinking for Qwen3 (chain-of-thought)
     if cfg["thinking"]:
@@ -258,7 +258,7 @@ def main() -> None:
     else:
         model_format = ModelFormat(thinking=False, enable_thinking=False)
 
-    grpo_config = GRPOConfig(
+    rl_config = RLConfig(
         base_model=cfg["base_model"],
         load_checkpoint=cfg["load_checkpoint"],
         lora_rank=cfg["lora_rank"],
@@ -291,7 +291,7 @@ def main() -> None:
         n_samples=args.n_samples,
     )
 
-    asyncio.run(train_grpo(grpo_config))
+    asyncio.run(train_rl(rl_config))
 
 
 if __name__ == "__main__":

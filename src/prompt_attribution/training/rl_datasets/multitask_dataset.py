@@ -96,7 +96,7 @@ def _resolve_tasks(tasks_str: str) -> list[str]:
 
 
 class MultitaskDataset:
-    """Loads pre-split MultitaskRecord JSONL for multi-task GRPO training.
+    """Loads pre-split MultitaskRecord JSONL for multi-task RL training.
 
     Data is pre-processed (balanced, split) by generate_multitask_data.py.
     This class just loads and optionally filters by task type.

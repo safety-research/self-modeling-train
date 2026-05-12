@@ -1,7 +1,7 @@
 """
 Module: prompt_attribution/training/hooks/early_stopping.py
 
-Early stopping logic for GRPO training loops.
+Early stopping logic for RL training loops.
 Reads full eval results from backfill_evals_loop.sh on disk.
 
 Structure:

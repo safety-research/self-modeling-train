@@ -1,7 +1,7 @@
 """
 Module: prompt_attribution/training/config.py
 
-Configuration dataclasses for GRPO training.
+Configuration dataclasses for RL training.
 
 Structure:
 - ModelFormat: Model-specific output format (thinking vs non-thinking)
@@ -10,7 +10,7 @@ Structure:
 - CompoundRewardConfig: Per-component weights and matchers for compound reward
 - COMPOUND_PRESETS: Named preset configurations for compound reward
 - MultitaskDataConfig: Multi-task data loading config
-- GRPOConfig: Top-level GRPO config
+- RLConfig: Top-level RL config
 """
 
 import math
@@ -205,7 +205,7 @@ class CompoundRewardConfig:
     """Configuration for compound reward computation.
 
     Controls per-component weights and matching strategies for the compound
-    reward type in GRPO training. Each component computes a score in [0, 1],
+    reward type in RL training. Each component computes a score in [0, 1],
     and the final reward is the weighted sum.
     """
 
@@ -294,8 +294,8 @@ class MultitaskDataConfig:
 
 
 @dataclass
-class GRPOConfig:
-    """Configuration for GRPO (Group Relative Policy Optimization) training.
+class RLConfig:
+    """Configuration for RL (Group Relative Policy Optimization) training.
 
     Uses Tinker SamplingClient + clipped surrogate loss (PPO-style).
     Supports warm-starting from a previous checkpoint via load_checkpoint.
@@ -313,7 +313,7 @@ class GRPOConfig:
     batch_size: int = 4  # Prompts per step (each generates k_completions)
     max_seq_length: int = 4096
 
-    # GRPO-specific
+    # RL-specific
     k_completions: int = 8  # Completions generated per prompt
     generation_temperature: float = 0.7
     max_generation_tokens: int = 1024
@@ -325,12 +325,12 @@ class GRPOConfig:
     format_penalty_reward: float = 0.0  # Reward assigned to parse failures when format_penalty=True
     advantage_clip: float = 5.0
     advantage_eps: float = 1e-4  # Epsilon for group std normalization (TRL uses 1e-4)
-    advantage_normalization: Literal["group", "none"] = "group"  # "group"=standard GRPO, "none"=Dr. GRPO
+    advantage_normalization: Literal["group", "none"] = "group"  # "group"=standard RL, "none"=Dr. RL
     filter_zero_std_groups: bool = False  # DAPO-style: skip groups where all K completions got same reward
-    ngrpo_virtual_reward: bool = False  # NGRPO: inject virtual max-reward sample for mean/std computation
+    nrl_virtual_reward: bool = False  # NRL: inject virtual max-reward sample for mean/std computation
 
     # Loss function (clipped surrogate)
-    loss_fn: Literal["importance_sampling", "ppo", "cispo"] = "ppo"  # ppo = true GRPO clipped surrogate
+    loss_fn: Literal["importance_sampling", "ppo", "cispo"] = "ppo"  # ppo = true RL clipped surrogate
     clip_epsilon: float = 0.2  # [1-eps, 1+eps] clip range (DeepSeek-R1 used 0.28)
 
     # KL penalty against reference model
@@ -362,7 +362,7 @@ class GRPOConfig:
 
     # Output
     output_dir: Path = field(default_factory=lambda: Path("outputs/training"))
-    wandb_project: str = "prompt-attribution-grpo"
+    wandb_project: str = "prompt-attribution-rl"
     run_name: str = ""
 
     # Evaluation (eval_max_tokens is derived from model_format in __post_init__)
@@ -381,7 +381,7 @@ class GRPOConfig:
     eval_job_timeout_minutes: int = 60
 
     # Sample logging (debugging observability)
-    sample_log_interval_steps: int = 10  # Print GRPO samples every N steps (0 = disabled)
+    sample_log_interval_steps: int = 10  # Print RL samples every N steps (0 = disabled)
     sample_log_count: int = 2  # Number of prompts to show per interval
 
     # Early stopping on C-index collapse
@@ -408,7 +408,7 @@ class GRPOConfig:
         if self.run_name:
             self.run_name = f"{self.run_name}_{timestamp}"
         else:
-            self.run_name = f"grpo_{timestamp}"
+            self.run_name = f"rl_{timestamp}"
 
         if not self.model_format.thinking:
             self.model_format = ModelFormat.from_model_name(self.base_model)

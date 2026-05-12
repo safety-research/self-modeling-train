@@ -8,7 +8,7 @@ E8 uses Tinker sampling_client for online flip verification.
 Structure:
 - SamplingClientHolder: Mutable wrapper so env can access current sampling_client
 - MultitaskEnv: Single-turn env with gt_type-dispatched reward
-- MultitaskEnvGroupBuilder: Creates K identical envs for GRPO group sampling
+- MultitaskEnvGroupBuilder: Creates K identical envs for RL group sampling
 - make_multitask_env_group_builder: Factory function
 """
 

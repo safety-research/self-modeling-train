@@ -1,9 +1,9 @@
 """
-Self-modeling training pipeline — data generation + GRPO fine-tuning.
+Self-modeling training pipeline — data generation + RL fine-tuning.
 
 Structure:
 - auto_perturbation/   corpus generation (Hugging Face track)
-- training/            Tinker GRPO trainers (single-task + multitask)
+- training/            Tinker RL trainers (single-task + multitask)
 - eval/                shared benchmark loaders + domain verifiers
 - shared/config/       perturbation YAMLs, ModelFormat, get_provider
 """

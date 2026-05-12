@@ -7,7 +7,7 @@ for accurately predicting the flip probability.
 
 Structure:
 - AttributionEnv: Single-turn env that parses flip_probability and computes reward
-- AttributionEnvGroupBuilder: Creates K identical envs for GRPO group sampling
+- AttributionEnvGroupBuilder: Creates K identical envs for RL group sampling
 """
 
 import logging
@@ -196,9 +196,9 @@ class AttributionEnv(ProblemEnv):
         # Legacy reward types (unbounded, kept for backward compat)
         if not format_ok:
             return self._format_penalty_reward
-        from prompt_attribution.training.trainers.grpo_reward import GRPOReward
+        from prompt_attribution.training.trainers.rl_reward import RLReward
 
-        reward_fn = GRPOReward(reward_type=self._reward_type)
+        reward_fn = RLReward(reward_type=self._reward_type)
         rewards = reward_fn.compute_rewards([predicted], [ground_truth])
         return rewards[0].item()
 
@@ -208,7 +208,7 @@ class AttributionEnvGroupBuilder(ProblemGroupBuilder):
     """Creates K identical AttributionEnv instances for one training record.
 
     Each env in the group gets the same prompt (same record), producing
-    K diverse completions for GRPO advantage centering.
+    K diverse completions for RL advantage centering.
     """
 
     # Override parent fields

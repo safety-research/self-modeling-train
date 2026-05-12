@@ -1,7 +1,7 @@
 """
-Module: prompt_attribution/training/train_grpo.py
+Module: prompt_attribution/training/train_rl.py
 
-Thin GRPO outer loop using Tinker cookbook building blocks.
+Thin RL outer loop using Tinker cookbook building blocks.
 Mirrors cookbook's do_sync_training() but inserts our hooks:
 LR scheduling, early stopping, GT refresh, checkpoint post-processing.
 
@@ -9,7 +9,7 @@ The bug-prone gradient path (datum building, advantage computation, training ste
 is ENTIRELY cookbook code — we never rewrite it.
 
 Usage:
-    asyncio.run(train_grpo(config))
+    asyncio.run(train_rl(config))
 """
 
 import json
@@ -33,7 +33,7 @@ from tinker_cookbook.rl.rollouts import do_group_rollout_and_filter_constant_rew
 from tinker_cookbook.utils import ml_log
 from tinker_cookbook.utils.misc_utils import timed
 
-from prompt_attribution.training.config import GRPOConfig, compute_lr
+from prompt_attribution.training.config import RLConfig, compute_lr
 from prompt_attribution.training.data.dataset import TrainingDataset
 from prompt_attribution.training.data.prompt_builder import TrainingPromptBuilder
 from prompt_attribution.training.rl_datasets.attribution_rl_dataset import build_rl_datasets
@@ -69,7 +69,7 @@ def _get_renderer_name(base_model: str) -> str:
         return "llama3"  # Safe default
 
 
-def _find_resumable_dir(config: GRPOConfig) -> Path | None:
+def _find_resumable_dir(config: RLConfig) -> Path | None:
     """Find an existing run directory with checkpoints to resume from.
 
     Searches output_dir for directories matching the run_name prefix
@@ -116,7 +116,7 @@ def _find_resumable_dir(config: GRPOConfig) -> Path | None:
     return None
 
 
-def _setup_output_dir(config: GRPOConfig) -> Path:
+def _setup_output_dir(config: RLConfig) -> Path:
     """Create or reuse output directory.
 
     If a previous run with the same name prefix has checkpoints,
@@ -268,10 +268,10 @@ def _maybe_resume_wandb(run_dir: Path, wandb_project: str | None) -> None:
         logger.warning(f"Failed to resume wandb run {run_id}: {e}. Will create new run.")
 
 
-async def train_grpo(config: GRPOConfig) -> None:
-    """Run GRPO training using cookbook building blocks + our hooks.
+async def train_rl(config: RLConfig) -> None:
+    """Run RL training using cookbook building blocks + our hooks.
 
-    This is the thin outer loop that replaces GRPOTrainer.train().
+    This is the thin outer loop that replaces RLTrainer.train().
     The gradient path (trajectory_to_data, compute_advantages, train_step)
     is entirely Tinker cookbook code — guaranteed correct alignment.
     """
@@ -469,7 +469,7 @@ async def train_grpo(config: GRPOConfig) -> None:
     i_batch = start_batch - 1  # Sentinel: updated each iteration; guards against empty range
 
     logger.info(
-        f"\033[36m[STEP]\033[0m GRPO training: {end_step} steps "
+        f"\033[36m[STEP]\033[0m RL training: {end_step} steps "
         f"({n_batches} batches/epoch, ~{end_step // max(1, n_batches)} epochs), "
         f"batch_size={config.batch_size}, K={config.k_completions}, "
         f"LR={config.schedule.base_lr}, loss={config.loss_fn}, "
@@ -648,4 +648,4 @@ async def train_grpo(config: GRPOConfig) -> None:
         )
 
     ml_logger.close()
-    logger.info("\033[32m[INFO]\033[0m GRPO training complete!")
+    logger.info("\033[32m[INFO]\033[0m RL training complete!")

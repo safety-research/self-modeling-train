@@ -25,7 +25,7 @@ def validate_gt_config(
 ) -> None:
     """Validate that a base model GT cache is configured before loading data.
 
-    GRPO training requires ground truth from the base model being trained,
+    RL training requires ground truth from the base model being trained,
     not from a different model (e.g., Haiku from auto-perturbation pipeline).
 
     Raises:

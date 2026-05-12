@@ -1,11 +1,11 @@
 """
 Module: prompt_attribution/training/rl_datasets/attribution_rl_dataset.py
 
-RLDataset wrapper for attribution GRPO training.
+RLDataset wrapper for attribution RL training.
 Wraps TrainingDataset to conform to the Tinker cookbook's RLDataset interface.
 
 Structure:
-- AttributionRLDataset: get_batch() returns list[EnvGroupBuilder] for GRPO sampling
+- AttributionRLDataset: get_batch() returns list[EnvGroupBuilder] for RL sampling
 - build_rl_datasets(): Factory that loads data and returns train/test datasets
 """
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class AttributionRLDataset(RLDataset):
-    """RLDataset adapter for attribution GRPO training.
+    """RLDataset adapter for attribution RL training.
 
     Each batch returns a list of EnvGroupBuilder, one per training record.
     Each builder creates K identical environments for group sampling.

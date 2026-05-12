@@ -1,8 +1,8 @@
 # Self-Modeling Training
 
-Data generation + GRPO fine-tuning pipeline that produces the trained
+Data generation + RL fine-tuning pipeline that produces the trained
 checkpoints evaluated by the
-[Self-Modeling Eval](../self-modeling-eval/) suite (E1–E10). Two data
+[Self-Modeling Eval](https://github.com/safety-research/self-modeling-eval) suite (E1–E10). Two data
 sources, one trainer.
 
 ## Layout
@@ -10,7 +10,7 @@ sources, one trainer.
 ```
 src/prompt_attribution/
   auto_perturbation/        corpus generator (Hugging Face benchmark track)
-  training/                 Tinker GRPO trainer + dataclasses
+  training/                 Tinker RL trainer + dataclasses
                             (single-task and multitask)
   eval/{benchmarks,domains} shared loaders + verifiers
   shared/                   ModelFormat, PerturbationConfig, inference helpers
@@ -25,8 +25,8 @@ scripts/
       generate_bloom_fork.py        # BLOOM behavioral fork pipeline
       convert_bloom_to_multitask.py # → 11-task training format
   training/
-    run_grpo_single_task.py         # single-eval GRPO (canonical)
-    run_grpo_multitask.py           # multitask GRPO across E1–E10
+    run_rl_single_task.py         # single-eval RL (canonical)
+    run_rl_multitask.py           # multitask RL across E1–E10
 ```
 
 ## Setup
@@ -102,7 +102,7 @@ The **ungrounded fork** pipeline. For each behavior the runner
 ideates scenarios, runs a base rollout, generates adversarial forks,
 executes them, judges behavior presence, and does two multi-turn
 feedback rounds with the judge's reasoning. The result is then
-converted into the same 11-task multitask format that GRPO consumes —
+converted into the same 11-task multitask format that RL consumes —
 the trainer sees the ungrounded prompt (scenario + change only) and
 learns to predict the 1–10 judge score.
 
@@ -114,7 +114,7 @@ uv run python scripts/data_gen/bloom/generate_bloom_fork.py \
     --max-per-behavior 75 \
     --output-dir outputs/training/bloom_fork_qwen3_8b_<DATE>
 
-# Convert to the 11-task GRPO training schema:
+# Convert to the 11-task RL training schema:
 uv run python scripts/data_gen/bloom/convert_bloom_to_multitask.py \
     --input-dir outputs/training/bloom_fork_<MODEL>_<DATE> \
     --output-dir outputs/training/multitask_bloom_<MODEL>_<DATE>
@@ -126,31 +126,31 @@ if you want to run this track.
 
 ## Training
 
-GRPO via Tinker LoRA. Single-task and multitask scripts share the same
+RL via Tinker LoRA. Single-task and multitask scripts share the same
 canonical config (batch=64, k=16, lr=2e-5 cosine, lora=32, n_steps=200).
 See each script's `--help` for the full flag list.
 
 ### Single-task
 
 ```bash
-uv run python scripts/training/run_grpo_single_task.py \
+uv run python scripts/training/run_rl_single_task.py \
     --task e3 \
     --data-dir outputs/training/multitask_<MODEL>_<DATE> \
     --base-model meta-llama/Llama-3.1-8B-Instruct \
     --max-generation-tokens 2048 \
-    --wandb-project self-modeling-grpo \
+    --wandb-project self-modeling-rl \
     --run-name e3_<MODEL>_<DATE>
 ```
 
 ### Multitask (all 11)
 
 ```bash
-uv run python scripts/training/run_grpo_multitask.py \
+uv run python scripts/training/run_rl_multitask.py \
     --tasks all \
     --data-dir outputs/training/multitask_<MODEL>_<DATE> \
     --base-model meta-llama/Llama-3.1-8B-Instruct \
     --max-generation-tokens 2048 \
-    --wandb-project self-modeling-grpo \
+    --wandb-project self-modeling-rl \
     --run-name mtl_<MODEL>_<DATE>
 ```
 
@@ -164,12 +164,12 @@ same — just point `--data-dir` at the converter output and restrict to
 E3:
 
 ```bash
-uv run python scripts/training/run_grpo_multitask.py \
+uv run python scripts/training/run_rl_multitask.py \
     --tasks e3 \
     --data-dir outputs/training/multitask_bloom_<MODEL>_<DATE> \
     --base-model meta-llama/Llama-3.1-8B-Instruct \
     --max-generation-tokens 2048 \
-    --wandb-project self-modeling-grpo \
+    --wandb-project self-modeling-rl \
     --run-name bloom_e3_<MODEL>_<DATE>
 ```
 
@@ -187,7 +187,7 @@ post-training eval.
 | `--base-model HF_ID` | base model to fine-tune (Tinker resolves the weights) |
 | `--max-generation-tokens N` | max tokens per rollout (default 2048) |
 | `--batch-size N` | rollout batch size (default 64) |
-| `--k-completions N` | rollouts per prompt for GRPO advantage (default 16) |
+| `--k-completions N` | rollouts per prompt for RL advantage (default 16) |
 | `--lr F` | learning rate (default 2e-5, cosine decay) |
 | `--lora-rank N` | LoRA rank (default 32) |
 | `--n-steps N` | training steps (default 200) |

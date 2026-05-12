@@ -614,7 +614,7 @@ def main():
         "--enable-judge", action="store_true",
         help="Enable LLM judge for E4 correctness (Opus), E7 flip detection (Haiku), "
              "and E7 decomposition (Haiku). Requires ANTHROPIC_API_KEY env var. "
-             "Does not affect E8 (E8 reward is computed online during GRPO training).",
+             "Does not affect E8 (E8 reward is computed online during RL training).",
     )
     parser.add_argument(
         "--judge-haiku-model", type=str, default="claude-haiku-4-5-20251001",

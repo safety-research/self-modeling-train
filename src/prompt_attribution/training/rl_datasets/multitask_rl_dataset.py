@@ -1,11 +1,11 @@
 """
 Module: prompt_attribution/training/rl_datasets/multitask_rl_dataset.py
 
-RLDataset wrapper for multi-task GRPO training.
+RLDataset wrapper for multi-task RL training.
 Wraps MultitaskDataset to conform to the Tinker cookbook's RLDataset interface.
 
 Structure:
-- MultitaskRLDataset: get_batch() returns list[EnvGroupBuilder] for GRPO sampling
+- MultitaskRLDataset: get_batch() returns list[EnvGroupBuilder] for RL sampling
 - build_multitask_rl_datasets(): Factory that returns train/val datasets
 """
 
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 class MultitaskRLDataset(RLDataset):
-    """RLDataset adapter for multi-task GRPO training.
+    """RLDataset adapter for multi-task RL training.
 
     Each batch returns a list of EnvGroupBuilder, one per training record.
     Records may be from different tasks — the env handles reward dispatch.

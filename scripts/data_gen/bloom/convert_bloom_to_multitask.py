@@ -1,5 +1,5 @@
 """
-Convert BLOOM fork data into MultitaskRecord format for GRPO training.
+Convert BLOOM fork data into MultitaskRecord format for RL training.
 
 Default `--template ungrounded`: scenario + change only; the model
 predicts the judge score (1-10) without seeing the rollout transcript.
