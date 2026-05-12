@@ -1,0 +1,36 @@
+# Secrets / local environment
+.env
+.venv
+.venv/
+
+# Run artifacts
+outputs/
+.cache/
+docs/
+wandb/
+bloom-results/
+
+# Python build / bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+.coverage_smoke
+htmlcov/
+
+# Editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+*~

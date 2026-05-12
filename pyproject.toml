@@ -1,0 +1,51 @@
+[project]
+name = "self-modeling-training"
+version = "0.1.0"
+description = "Data generation and GRPO fine-tuning pipeline for the self-modeling eval suite."
+requires-python = ">=3.11"
+dependencies = [
+    "safetytooling @ git+https://github.com/safety-research/safety-tooling.git@3117839f0cdf5b4a56c8fc00299c199330ee2b2f",
+    "tinker>=0.13.1",
+    "math-verify>=0.7.0",
+    "datasets>=4.4.2",
+    "anthropic>=0.75.0",
+    "openai>=2.30",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "wandb>=0.19.9",
+    "tqdm>=4.66",
+    "litellm>=1.40",
+    "vllm>=0.19",
+    "bloom",
+    "tinker-cookbook",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prompt_attribution"]
+
+[tool.uv]
+override-dependencies = [
+    "anthropic>=0.75.0",
+    "datasets>=4.4.2",
+    "openai>=2.30",
+    "pydantic>=2.11.4",
+    "pytest>=9.0.2",
+    "tiktoken>=0.12.0",
+    "transformers>=4.57.6,<5.0.0",
+]
+
+[tool.uv.sources]
+# Clone the upstream repos and point these paths at your local copies:
+#   git clone https://github.com/safety-research/bloom            ../bloom
+#   git clone https://github.com/thinking-machines-lab/tinker-cookbook ../tinker-cookbook
+bloom = { path = "../bloom" }
+tinker-cookbook = { path = "../tinker-cookbook" }
