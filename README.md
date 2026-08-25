@@ -1,8 +1,13 @@
 # Self-Modeling Training
 
+This is the official repository implementing the synthetic data generation
+and RL fine-tuning pipeline from Evaluating and Improving LLM Self-Modeling
+at the 2026 Conference on Empirical Methods in Natural Language Processing
+(EMNLP 2026).
+
 Data generation + RL fine-tuning pipeline that produces the trained
 checkpoints evaluated by the
-[Self-Modeling Eval](https://github.com/safety-research/self-modeling-eval) suite (E1–E10). Two data
+[Self-Modeling Eval](https://github.com/safety-research/self-modeling-eval) suite (E1–E10). ThiTwo data
 sources, one trainer.
 
 ## Layout
@@ -194,3 +199,15 @@ post-training eval.
 | `--load-checkpoint PATH` | warm-init from a previous Tinker checkpoint |
 | `--wandb-project NAME` | wandb project name |
 | `--run-name NAME` | unique run identifier (auto-timestamped if omitted) |
+
+## Citation
+
+```bibtex
+@inproceedings{zeng2026evaluating,
+  title={Evaluating and Improving {LLM} Self-Modeling},
+  author={Siqi Zeng and Andre N. Assis and Rowan Wang},
+  booktitle={The 2026 Conference on Empirical Methods in Natural Language Processing},
+  year={2026},
+  url={https://openreview.net/forum?id=GdUcIPKke1}
+}
+```
